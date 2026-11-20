@@ -42,5 +42,18 @@ if (typeof parsed.url !== "string" || parsed.url.length === 0) {
   process.exit(1);
 }
 
+// The address has to be one of the YouTube shapes the house accepts —
+// a watch page, a Shorts page, or the short youtu.be form — and nothing
+// else, so a pasted-wrong link is caught here rather than at intake.
+const acceptedShapes = [
+  /^https:\/\/www\.youtube\.com\/watch\?v=[\w-]+/,
+  /^https:\/\/www\.youtube\.com\/shorts\/[\w-]+/,
+  /^https:\/\/youtu\.be\/[\w-]+/,
+];
+if (!acceptedShapes.some((shape) => shape.test(parsed.url as string))) {
+  console.error(`VIDEO.json url is not a YouTube video address: ${parsed.url}`);
+  process.exit(1);
+}
+
 mkdirSync(outputDir, { recursive: true });
 writeFileSync(targetPath, payload);
